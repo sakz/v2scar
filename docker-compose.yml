@@ -13,7 +13,7 @@ services:
 
   v2scar:
     container_name: v2scar
-    image: ehco1996/v2scar
+    image: sakz/v2scar
     restart: always
     depends_on:
       - v2ray
