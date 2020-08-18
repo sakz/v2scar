@@ -1,13 +1,17 @@
 package main
 
 import (
+	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"time"
 
 	"github.com/urfave/cli"
 
 	"github.com/Ehco1996/v2scar"
+
+	"github.com/tidwall/gjson"
 )
 
 var SYNC_TIME int
@@ -45,6 +49,8 @@ func main() {
 	}
 
 	app.Action = func(c *cli.Context) error {
+		getMyIp(&v2scar.IP)
+		log.Println("本机的IP是: ", v2scar.IP)
 		up := v2scar.NewUserPool()
 		log.Println("Waitting v2ray start...")
 		time.Sleep(time.Second * 3)
@@ -61,3 +67,19 @@ func main() {
 	}
 
 }
+
+func getMyIp(ip *string) {
+	resp, err := http.Get("https://api.ip.sb/geoip")
+	if err != nil {
+		log.Println(err)
+		*ip = ""
+		return
+	}
+	defer resp.Body.Close()
+	res, _ := ioutil.ReadAll(resp.Body)
+	if !gjson.Valid(string(res)) {
+		log.Println("invalid json")
+	}
+	*ip = gjson.Get(string(res), `ip`).String()
+}
+

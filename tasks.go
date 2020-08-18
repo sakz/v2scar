@@ -13,6 +13,7 @@ import (
 
 var API_ENDPOINT string
 var GRPC_ENDPOINT string
+var IP string
 
 type UserConfig struct {
 	UserId  int    `json:"user_id"`
@@ -30,6 +31,7 @@ type UserTraffic struct {
 
 type syncReq struct {
 	UserTraffics []*UserTraffic `json:"user_traffics"`
+	IP string
 }
 
 type syncResp struct {
@@ -144,6 +146,6 @@ func syncUserTrafficToServer(up *UserPool, c v2stats.StatsServiceClient, hc *htt
 			user.resetTraffic()
 		}
 	}
-	postJson(hc, API_ENDPOINT, &syncReq{UserTraffics: tfs})
+	postJson(hc, API_ENDPOINT, &syncReq{UserTraffics: tfs, IP: IP})
 	log.Printf("[INFO] Call syncUserTrafficToServer ONLINE USER COUNT: %d", len(tfs))
 }
